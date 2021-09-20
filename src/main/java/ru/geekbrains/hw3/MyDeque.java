@@ -2,26 +2,32 @@ package ru.geekbrains.hw3;
 
 import java.util.Arrays;
 
-public class MyQueue<T> {
+public class MyDeque<T> {
     private T[] list;
     private int size;
-    private final int DEFAULT_CAPACITY = 10;
+    private final int DEFAULT_CAPACITY = 5;
     private int begin;
     private int end;
 
-    public MyQueue(int capacity) {
+    public MyDeque(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("capacity: " + capacity);
         }
         list = (T[]) new Object[capacity];
     }
 
-    public MyQueue() {
+    public MyDeque() {
         list = (T[]) new Object[DEFAULT_CAPACITY];
     }
 
     private int nextIndex(int index) {
         return (index + 1) % list.length;
+    }
+
+    private int previousIndex(int index) {
+        if(index > 0)
+            return index - 1;
+        return list.length - 1;
     }
 
     public T peekFront() {
@@ -31,7 +37,14 @@ public class MyQueue<T> {
         return list[begin];
     }
 
-    public void insert(T item) {
+    public T peekBack() {
+        if (isEmpty()) {
+            throw new RuntimeException("Queue isEmpty");
+        }
+        return list[previousIndex(end)];
+    }
+
+    public void insertRight(T item) {
         if (isFull()) {
             reCapacity((int)(list.length*1.5));
             //throw new RuntimeException("Queue isFull");
@@ -41,11 +54,29 @@ public class MyQueue<T> {
         end = nextIndex(end);
     }
 
-    public T remove() {
+    public void insertLeft(T item) {
+        if (isFull()) {
+            reCapacity((int)(list.length*1.5));
+            //throw new RuntimeException("Queue isFull");
+        }
+        size++;
+        begin = previousIndex(begin);
+        list[begin] = item;
+    }
+
+    public T removeLeft() {
         T temp = peekFront();
         size--;
         list[begin] = null;
         begin = nextIndex(begin);
+        return temp;
+    }
+
+    public T removeRight() {
+        T temp = peekBack();
+        size--;
+        end = previousIndex(end);
+        list[end] = null;
         return temp;
     }
 
@@ -75,4 +106,5 @@ public class MyQueue<T> {
         end = size;
         list = temp;
     }
+
 }
